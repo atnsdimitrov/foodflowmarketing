@@ -525,38 +525,9 @@
                 switchLanguage('it');
             });
 
-            // Add event listeners to navigation links
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const page = this.getAttribute('data-page');
-                    showPage(page);
-                });
-            });
-            
-            // Initialize with home page and English
-            showPage('home');
+            // Initialize with English
             switchLanguage('en');
         });
-
-        // Function to navigate to different sections
-        function showPage(pageName) {
-            // Scroll to requested section
-            const section = document.getElementById(pageName);
-            if (section) {
-                section.scrollIntoView({ behavior: 'smooth' });
-            }
-
-            // Update navigation active state
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('nav-active');
-            });
-
-            const activeNavLink = document.querySelector(`[data-page="${pageName}"]`);
-            if (activeNavLink) {
-                activeNavLink.classList.add('nav-active');
-            }
-        }
     </script>
 
     <!-- Hero Section -->
@@ -792,13 +763,21 @@
 
     <script>
 
-        // Smooth scrolling for in-page anchors
+        // Smooth scrolling and nav highlighting for in-page anchors
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 const page = this.getAttribute('href').substring(1);
-                if (page) {
+                const section = document.getElementById(page);
+                if (section) {
                     e.preventDefault();
-                    showPage(page);
+                    section.scrollIntoView({ behavior: 'smooth' });
+
+                    if (this.classList.contains('nav-link')) {
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('nav-active');
+                        });
+                        this.classList.add('nav-active');
+                    }
                 }
             });
         });
