@@ -686,7 +686,9 @@
         <div class="lang-content active" id="en-contact">
             <h2 class="section-title">Ready to Grow Your Restaurant?</h2>
             <div class="contact-form">
-                <form>
+                <!-- Replace YOUR_FORM_ID with the ID from your Formspree dashboard -->
+                <form id="contact-form-en" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                    <input type="hidden" name="_subject" value="New inquiry from FoodFlow Marketing">
                     <div class="form-group">
                         <label for="business-name">Restaurant/Business Name</label>
                         <input type="text" id="business-name" name="business-name" required>
@@ -727,7 +729,9 @@
         <div class="lang-content" id="it-contact">
             <h2 class="section-title">Pronto a Far Crescere il Tuo Ristorante?</h2>
             <div class="contact-form">
-                <form>
+                <!-- Replace YOUR_FORM_ID with the ID from your Formspree dashboard -->
+                <form id="contact-form-it" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                    <input type="hidden" name="_subject" value="Nuova richiesta da FoodFlow Marketing">
                     <div class="form-group">
                         <label for="business-name-it">Nome Ristorante/Attività</label>
                         <input type="text" id="business-name-it" name="business-name" required>
@@ -797,27 +801,44 @@
         });
 
         // Form submission
-        document.addEventListener('submit', function(e) {
+        document.addEventListener('submit', async function(e) {
             if (e.target.tagName === 'FORM') {
                 e.preventDefault();
-                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const form = e.target;
+                const submitBtn = form.querySelector('button[type="submit"]');
                 const originalText = submitBtn.textContent;
-                
+
                 // Show loading state
                 submitBtn.textContent = currentLanguage === 'en' ? 'Sending...' : 'Invio in corso...';
                 submitBtn.disabled = true;
-                
-                // Simulate form submission
-                setTimeout(() => {
-                    alert(currentLanguage === 'en' ? 
-                        'Thank you for your interest! We will contact you within 24 hours to schedule your free consultation.' : 
-                        'Grazie per il tuo interesse! Ti contatteremo entro 24 ore per programmare la tua consulenza gratuita.');
-                    
-                    // Reset form
-                    e.target.reset();
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: new FormData(form),
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert(currentLanguage === 'en'
+                            ? 'Thank you for your interest! We will contact you within 24 hours to schedule your free consultation.'
+                            : 'Grazie per il tuo interesse! Ti contatteremo entro 24 ore per programmare la tua consulenza gratuita.');
+                        form.reset();
+                    } else {
+                        alert(currentLanguage === 'en'
+                            ? 'Oops! There was a problem submitting the form.'
+                            : 'Ops! Si è verificato un problema con l\'invio del modulo.');
+                    }
+                } catch (error) {
+                    alert(currentLanguage === 'en'
+                        ? 'Oops! There was a problem submitting the form.'
+                        : 'Ops! Si è verificato un problema con l\'invio del modulo.');
+                } finally {
                     submitBtn.textContent = originalText;
                     submitBtn.disabled = false;
-                }, 2000);
+                }
             }
         });
 
